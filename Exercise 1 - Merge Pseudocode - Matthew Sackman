@@ -1,0 +1,54 @@
+// Declare Files
+InputFile GeraldinesBusinesses
+InputFile GeraldsBusinesses
+OutputFile UnifiedCustomerFile
+
+// Declare Variables
+Integer custNumberGeraldines, custNumberGeralds
+String lastNameGeraldines, lastNameGeralds
+String addressGeraldines, addressGeralds
+Integer sizeGeraldines, sizeGeralds
+
+// Open Files
+Open GeraldinesBusinesses "GeraldinesBusinesses.csv"
+Open GeraldsBusinesses "GeraldsBusinesses.csv"
+Create UnifiedCustomerFile "UnifiedCustomerFile.csv"
+
+// Read Initial Records
+Read GeraldinesBusinesses custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+Read GeraldsBusinesses custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+
+// Begin Merge Process
+While NOT EOF(GeraldinesBusinesses) OR NOT EOF(GeraldsBusinesses)
+    If custNumberGeraldines = custNumberGeralds Then
+        // Duplicate Customer Number - Write Once
+        Write UnifiedCustomerFile custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+        Read GeraldinesBusinesses custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+        Read GeraldsBusinesses custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+    Else If custNumberGeraldines < custNumberGeralds Then
+        // Write Record from Geraldine’s Businesses
+        Write UnifiedCustomerFile custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+        Read GeraldinesBusinesses custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+    Else
+        // Write Record from Gerald’s Businesses
+        Write UnifiedCustomerFile custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+        Read GeraldsBusinesses custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+    End If
+End While
+
+// Write Remaining Records from Geraldine's Businesses
+While NOT EOF(GeraldinesBusinesses)
+    Write UnifiedCustomerFile custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+    Read GeraldinesBusinesses custNumberGeraldines, lastNameGeraldines, addressGeraldines, sizeGeraldines
+End While
+
+// Write Remaining Records from Gerald's Businesses
+While NOT EOF(GeraldsBusinesses)
+    Write UnifiedCustomerFile custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+    Read GeraldsBusinesses custNumberGeralds, lastNameGeralds, addressGeralds, sizeGeralds
+End While
+
+// Close Files
+Close GeraldinesBusinesses
+Close GeraldsBusinesses
+Close UnifiedCustomerFile
